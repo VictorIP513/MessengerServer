@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+}
+
+group 'MessengerServer'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.1.4.RELEASE'
+}
