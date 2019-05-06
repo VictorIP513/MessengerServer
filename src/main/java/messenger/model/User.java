@@ -1,25 +1,34 @@
 package messenger.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
-import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+    @Type(type = "uuid-char")
+    private UUID uuid;
 
+    @Column(name = "first_name")
+    private String firstName;
+
+    private String surname;
     private String login;
     private String password;
     private String email;
-    private String username;
-    private String surname;
 
-    @ManyToMany
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles;
+    public String getLogin() {
+        return login;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 }

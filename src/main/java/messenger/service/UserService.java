@@ -1,10 +1,19 @@
 package messenger.service;
 
-import messenger.model.User;
+import messenger.dao.UserDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public interface UserService {
+public class UserService {
 
-    void save(User user);
+    @Autowired
+    private UserDao userDao;
 
-    User findByLogin(String login);
+    public boolean isExistLogin(String login) {
+        return userDao.isExistLogin(login);
+    }
+
+    public boolean isExistEmail(String email) {
+        return userDao.isExistEmail(email);
+    }
 }
