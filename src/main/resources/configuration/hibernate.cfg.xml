@@ -16,6 +16,7 @@
 
 
         <mapping class="messenger.model.User"/>
+        <mapping class="messenger.model.EmailStatus"/>
 
     </session-factory>
 </hibernate-configuration>

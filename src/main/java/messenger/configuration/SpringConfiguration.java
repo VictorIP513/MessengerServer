@@ -1,7 +1,7 @@
 package messenger.configuration;
 
-import messenger.dao.UserDao;
 import messenger.service.UserService;
+import messenger.utils.DatabaseUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +18,8 @@ public class SpringConfiguration {
     }
 
     @Bean
-    public UserDao userDao() {
-        return new UserDao();
+    public DatabaseUtils databaseUtils() {
+        return new DatabaseUtils();
     }
 
     @Bean
