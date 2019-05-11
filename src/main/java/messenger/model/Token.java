@@ -4,26 +4,26 @@ import javax.persistence.*;
 
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "email_status")
-public class EmailStatus {
+@Table(name = "tokens")
+public class Token {
 
     @Id
     @GeneratedValue
     private int id;
 
-    @Column(name = "confirm_status")
-    private boolean confirmStatus;
+    @Column(name = "authentication_token")
+    private String authenticationToken;
 
     @OneToOne
     @JoinColumns(foreignKey = @ForeignKey(name = "user_id"), value = @JoinColumn(referencedColumnName = "id"))
     private User user;
 
-    public boolean isConfirmStatus() {
-        return confirmStatus;
+    public String getAuthenticationToken() {
+        return authenticationToken;
     }
 
-    public void setConfirmStatus(boolean confirmStatus) {
-        this.confirmStatus = confirmStatus;
+    public void setAuthenticationToken(String authenticationToken) {
+        this.authenticationToken = authenticationToken;
     }
 
     public User getUser() {

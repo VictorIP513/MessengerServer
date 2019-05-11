@@ -1,17 +1,17 @@
 package messenger.controller.api;
 
+import messenger.controller.response.LoginResponse;
 import messenger.controller.response.RegistrationResponse;
 import messenger.model.User;
+import messenger.service.AuthenticationTokenGenerator;
 import messenger.service.UserService;
+import messenger.utils.StringUtils;
 import messenger.view.LocalizationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @SuppressWarnings("unused")
 @Controller
@@ -42,5 +42,28 @@ public class MessengerController {
         }
         return new ResponseEntity<>(
                 LocalizationProperties.getProperty("activation.code_is_invalid"), HttpStatus.OK);
+    }
+
+    @PostMapping("/api/login")
+    private ResponseEntity<LoginResponse> login(@RequestParam(name = "login") String login,
+                                                @RequestParam(name = "password") String password) {
+        login = StringUtils.removeBeginAndEndQuotes(login);
+        password = StringUtils.removeBeginAndEndQuotes(password);
+        User user = userService.getUserByLoginAndPassword(login, password);
+        if (user != null) {
+            if (userService.isActivateUser(user)) {
+                String authenticationToken = AuthenticationTokenGenerator.getToken();
+                userService.setNewAuthenticationTokenToUser(authenticationToken, user);
+                LoginResponse response = new LoginResponse(LoginResponse.Status.LOGIN_SUCCESSFUL, authenticationToken);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                LoginResponse response =
+                        new LoginResponse(LoginResponse.Status.ACCOUNT_NOT_CONFIRMED, null);
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+        }
+        LoginResponse response =
+                new LoginResponse(LoginResponse.Status.INVALID_LOGIN_OR_PASSWORD, null);
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 }

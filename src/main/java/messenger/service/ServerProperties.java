@@ -19,8 +19,8 @@ class ServerProperties {
     private static Properties properties;
 
     private ServerProperties() {
-    }
 
+    }
 
     static synchronized String getProperty(String key) {
         if (properties == null) {

@@ -5,7 +5,6 @@ import messenger.utils.DatabaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
@@ -32,10 +31,14 @@ public class UserDao {
     }
 
     public User getUserFromUUID(UUID uuid) {
-        List<User> users = databaseUtils.getObjectsByField(User.class, UUID_COLUMN_NAME, uuid);
-        if (users.isEmpty()) {
-            return null;
+        return databaseUtils.getUniqueObjectByField(User.class, UUID_COLUMN_NAME, uuid);
+    }
+
+    public User getUserByLoginAndPassword(String login, String password) {
+        User user = databaseUtils.getUniqueObjectByField(User.class, LOGIN_COLUMN_NAME, login);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
         }
-        return users.get(0);
+        return null;
     }
 }

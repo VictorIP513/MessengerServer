@@ -1,15 +1,18 @@
 package messenger.service;
 
 import messenger.dao.EmailStatusDao;
+import messenger.dao.TokenDao;
 import messenger.dao.UserDao;
 import messenger.model.EmailStatus;
 import messenger.model.User;
 import messenger.view.LocalizationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @SuppressWarnings("unused")
+@Service
 public class UserService {
 
     private static final String UUID_REGEXP_VALIDATOR =
@@ -20,6 +23,9 @@ public class UserService {
 
     @Autowired
     private EmailStatusDao emailStatusDao;
+
+    @Autowired
+    private TokenDao tokenDao;
 
     @Autowired
     private MailSender mailSender;
@@ -53,6 +59,18 @@ public class UserService {
             }
         }
         return false;
+    }
+
+    public User getUserByLoginAndPassword(String login, String password) {
+        return userDao.getUserByLoginAndPassword(login, password);
+    }
+
+    public void setNewAuthenticationTokenToUser(String authenticationToken, User user) {
+        tokenDao.setNewAuthenticationTokenToUser(authenticationToken, user);
+    }
+
+    public boolean isActivateUser(User user) {
+        return emailStatusDao.isActivateUser(user);
     }
 
     private void sendEmailConfirmMessage(User user) {

@@ -24,10 +24,14 @@ public class DatabaseUtils {
         }
     }
 
-    public <T> List<T> getObjectsByField(Class<T> tableClassType, String columnName, Object object) {
+    public <T> T getUniqueObjectByField(Class<T> tableClassType, String columnName, Object object) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            return getObjectsByField(session, tableClassType, columnName, object);
+            List<T> queryResult = getObjectsByField(session, tableClassType, columnName, object);
+            if (queryResult.isEmpty()) {
+                return null;
+            }
+            return queryResult.get(0);
         }
     }
 
@@ -39,7 +43,7 @@ public class DatabaseUtils {
         openSessionAndExecuteAction(session -> session.update(object));
     }
 
-    public void openSessionAndExecuteAction(DatabaseActionListener databaseActionListener) {
+    private void openSessionAndExecuteAction(DatabaseActionListener databaseActionListener) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             databaseActionListener.onAction(session);
