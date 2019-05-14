@@ -33,17 +33,6 @@ public class MessengerController {
         return new ResponseEntity<>(RegistrationResponse.REGISTRATION_SUCCESSFUL, HttpStatus.OK);
     }
 
-    @GetMapping("/api/activate/{activationCode}")
-    private ResponseEntity<String> activate(@PathVariable String activationCode) {
-        boolean isActivated = userService.activateUser(activationCode);
-        if (isActivated) {
-            return new ResponseEntity<>(
-                    LocalizationProperties.getProperty("activation.activation_successful"), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(
-                LocalizationProperties.getProperty("activation.code_is_invalid"), HttpStatus.OK);
-    }
-
     @PostMapping("/api/login")
     private ResponseEntity<LoginResponse> login(@RequestParam(name = "login") String login,
                                                 @RequestParam(name = "password") String password) {
@@ -65,5 +54,22 @@ public class MessengerController {
         LoginResponse response =
                 new LoginResponse(LoginResponse.Status.INVALID_LOGIN_OR_PASSWORD, null);
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @GetMapping("/api/activate/{activationCode}")
+    private ResponseEntity<String> activate(@PathVariable String activationCode) {
+        boolean isActivated = userService.activateUser(activationCode);
+        if (isActivated) {
+            return new ResponseEntity<>(
+                    LocalizationProperties.getProperty("activation.activation_successful"), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(
+                LocalizationProperties.getProperty("activation.code_is_invalid"), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/checkAuthenticationToken/{authenticationToken}")
+    private ResponseEntity<Boolean> checkCorrectAuthenticationToken(@PathVariable String authenticationToken) {
+        boolean isCorrectAuthenticationToken = userService.checkCorrectAuthenticationToken(authenticationToken);
+        return new ResponseEntity<>(isCorrectAuthenticationToken, HttpStatus.OK);
     }
 }

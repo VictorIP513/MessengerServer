@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class TokenDao {
 
     private static final String USER_COLUMN_NAME = "user";
+    private static final String AUTHENTICATION_TOKEN_COLUMN_NAME = "authenticationToken";
 
     @Autowired
     private DatabaseUtils databaseUtils;
@@ -26,5 +27,11 @@ public class TokenDao {
             token.setAuthenticationToken(authenticationToken);
             databaseUtils.updateObject(token);
         }
+    }
+
+    public boolean isCorrectAuthenticationToken(String authenticationToken) {
+        Token token = databaseUtils.getUniqueObjectByField(
+                Token.class, AUTHENTICATION_TOKEN_COLUMN_NAME, authenticationToken);
+        return token != null;
     }
 }

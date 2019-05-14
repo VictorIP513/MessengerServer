@@ -73,6 +73,10 @@ public class UserService {
         return emailStatusDao.isActivateUser(user);
     }
 
+    public boolean checkCorrectAuthenticationToken(String authenticationToken) {
+        return tokenDao.isCorrectAuthenticationToken(authenticationToken);
+    }
+
     private void sendEmailConfirmMessage(User user) {
         String serverIp = ServerProperties.getProperty("server.ip");
         String serverPort = ServerProperties.getProperty("server.port");
