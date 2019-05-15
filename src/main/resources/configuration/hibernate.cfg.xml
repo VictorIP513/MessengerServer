@@ -14,10 +14,10 @@
         <property name="hbm2ddl.auto">validate</property>
         <property name="show_sql">true</property>
 
-
         <mapping class="messenger.model.User"/>
         <mapping class="messenger.model.EmailStatus"/>
         <mapping class="messenger.model.Token"/>
+        <mapping class="messenger.model.UserDetails"/>
 
     </session-factory>
 </hibernate-configuration>

@@ -4,6 +4,7 @@
 .idea
 gradle
 build
+uploads
 local.properties
 gradle.properties
 gradlew

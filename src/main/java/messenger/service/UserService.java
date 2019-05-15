@@ -3,6 +3,7 @@ package messenger.service;
 import messenger.dao.EmailStatusDao;
 import messenger.dao.TokenDao;
 import messenger.dao.UserDao;
+import messenger.dao.UserDetailsDao;
 import messenger.model.EmailStatus;
 import messenger.model.User;
 import messenger.view.LocalizationProperties;
@@ -25,10 +26,16 @@ public class UserService {
     private EmailStatusDao emailStatusDao;
 
     @Autowired
+    private UserDetailsDao userDetailsDao;
+
+    @Autowired
     private TokenDao tokenDao;
 
     @Autowired
     private MailSender mailSender;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     public boolean isExistLogin(String login) {
         return userDao.isExistLogin(login);
@@ -75,6 +82,17 @@ public class UserService {
 
     public boolean checkCorrectAuthenticationToken(String authenticationToken) {
         return tokenDao.isCorrectAuthenticationToken(authenticationToken);
+    }
+
+    public User getUserByAuthenticationToken(String authenticationToken) {
+        return tokenDao.getUserByAuthenticationToken(authenticationToken);
+    }
+
+    public void uploadUserPhoto(String pathToPhoto, User user) {
+        String pathToOldPhoto = userDetailsDao.uploadUserPhotoAndGetOldPhoto(pathToPhoto, user);
+        if (pathToOldPhoto != null) {
+            fileStorageService.deleteFile(pathToOldPhoto);
+        }
     }
 
     private void sendEmailConfirmMessage(User user) {

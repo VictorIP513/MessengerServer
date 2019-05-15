@@ -4,14 +4,15 @@ import messenger.controller.response.LoginResponse;
 import messenger.controller.response.RegistrationResponse;
 import messenger.model.User;
 import messenger.service.AuthenticationTokenGenerator;
+import messenger.service.FileStorageService;
 import messenger.service.UserService;
-import messenger.utils.StringUtils;
 import messenger.view.LocalizationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @SuppressWarnings("unused")
 @Controller
@@ -19,6 +20,9 @@ public class MessengerController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @PostMapping("/api/registration")
     private ResponseEntity<RegistrationResponse> registration(@RequestBody User user) {
@@ -36,8 +40,6 @@ public class MessengerController {
     @PostMapping("/api/login")
     private ResponseEntity<LoginResponse> login(@RequestParam(name = "login") String login,
                                                 @RequestParam(name = "password") String password) {
-        login = StringUtils.removeBeginAndEndQuotes(login);
-        password = StringUtils.removeBeginAndEndQuotes(password);
         User user = userService.getUserByLoginAndPassword(login, password);
         if (user != null) {
             if (userService.isActivateUser(user)) {
@@ -54,6 +56,18 @@ public class MessengerController {
         LoginResponse response =
                 new LoginResponse(LoginResponse.Status.INVALID_LOGIN_OR_PASSWORD, null);
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("/api/uploadPhoto")
+    private ResponseEntity<Void> uploadPhoto(@ModelAttribute(name = "photo") MultipartFile photo,
+                                             @RequestParam(name = "authenticationToken") String authenticationToken) {
+        if (!userService.checkCorrectAuthenticationToken(authenticationToken)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        String pathToPhoto = fileStorageService.storeFile(photo, user);
+        userService.uploadUserPhoto(pathToPhoto, user);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/api/activate/{activationCode}")
