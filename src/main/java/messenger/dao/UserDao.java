@@ -41,4 +41,8 @@ public class UserDao {
         }
         return null;
     }
+
+    public User getUserByLogin(String login) {
+        return databaseUtils.getUniqueObjectByField(User.class, LOGIN_COLUMN_NAME, login);
+    }
 }

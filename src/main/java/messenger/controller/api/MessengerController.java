@@ -3,12 +3,15 @@ package messenger.controller.api;
 import messenger.controller.response.LoginResponse;
 import messenger.controller.response.RegistrationResponse;
 import messenger.model.User;
+import messenger.model.UserDetails;
 import messenger.service.AuthenticationTokenGenerator;
 import messenger.service.FileStorageService;
 import messenger.service.UserService;
 import messenger.view.LocalizationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -85,5 +88,31 @@ public class MessengerController {
     private ResponseEntity<Boolean> checkCorrectAuthenticationToken(@PathVariable String authenticationToken) {
         boolean isCorrectAuthenticationToken = userService.checkCorrectAuthenticationToken(authenticationToken);
         return new ResponseEntity<>(isCorrectAuthenticationToken, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/getUser/{login}")
+    private ResponseEntity<User> getUser(@PathVariable String login) {
+        User user = userService.getUserByLogin(login);
+        if (user != null) {
+            user.setPassword(null);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/api/getUserPhoto/{login}")
+    private ResponseEntity<Resource> getUserPhoto(@PathVariable String login) {
+        User user = userService.getUserByLogin(login);
+        if (user != null) {
+            UserDetails userDetails = userService.getUserDetailsByUser(user);
+            String path = fileStorageService.getFullPathToFile(userDetails.getUserPhoto());
+            Resource resource = fileStorageService.getResourceFromFile(path);
+            if (resource != null) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
+                        .body(resource);
+            }
+        }
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 }

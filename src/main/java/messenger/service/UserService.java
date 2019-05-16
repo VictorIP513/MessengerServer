@@ -6,6 +6,7 @@ import messenger.dao.UserDao;
 import messenger.dao.UserDetailsDao;
 import messenger.model.EmailStatus;
 import messenger.model.User;
+import messenger.model.UserDetails;
 import messenger.view.LocalizationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,11 +89,19 @@ public class UserService {
         return tokenDao.getUserByAuthenticationToken(authenticationToken);
     }
 
+    public User getUserByLogin(String login) {
+        return userDao.getUserByLogin(login);
+    }
+
     public void uploadUserPhoto(String pathToPhoto, User user) {
         String pathToOldPhoto = userDetailsDao.uploadUserPhotoAndGetOldPhoto(pathToPhoto, user);
         if (pathToOldPhoto != null) {
             fileStorageService.deleteFile(pathToOldPhoto);
         }
+    }
+
+    public UserDetails getUserDetailsByUser(User user) {
+        return userDetailsDao.getUserDetailsByUser(user);
     }
 
     private void sendEmailConfirmMessage(User user) {

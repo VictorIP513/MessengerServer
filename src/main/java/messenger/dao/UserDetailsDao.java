@@ -15,9 +15,8 @@ public class UserDetailsDao {
     @Autowired
     private DatabaseUtils databaseUtils;
 
-
     public String uploadUserPhotoAndGetOldPhoto(String pathToPhoto, User user) {
-        UserDetails userDetails = databaseUtils.getUniqueObjectByField(UserDetails.class, USER_COLUMN_NAME, user);
+        UserDetails userDetails = getUserDetailsByUser(user);
         if (userDetails == null) {
             UserDetails newUserDetails = new UserDetails();
             newUserDetails.setUserPhoto(pathToPhoto);
@@ -30,5 +29,9 @@ public class UserDetailsDao {
             databaseUtils.updateObject(userDetails);
             return pathToOldPhoto;
         }
+    }
+
+    public UserDetails getUserDetailsByUser(User user) {
+        return databaseUtils.getUniqueObjectByField(UserDetails.class, USER_COLUMN_NAME, user);
     }
 }
