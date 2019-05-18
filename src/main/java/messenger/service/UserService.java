@@ -11,6 +11,7 @@ import messenger.view.LocalizationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
@@ -102,6 +103,10 @@ public class UserService {
 
     public UserDetails getUserDetailsByUser(User user) {
         return userDetailsDao.getUserDetailsByUser(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userDao.getAllUsers();
     }
 
     private void sendEmailConfirmMessage(User user) {

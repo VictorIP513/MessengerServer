@@ -17,6 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @SuppressWarnings("unused")
 @Controller
 public class MessengerController {
@@ -105,6 +107,9 @@ public class MessengerController {
         User user = userService.getUserByLogin(login);
         if (user != null) {
             UserDetails userDetails = userService.getUserDetailsByUser(user);
+            if (userDetails == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
             String path = fileStorageService.getFullPathToFile(userDetails.getUserPhoto());
             Resource resource = fileStorageService.getResourceFromFile(path);
             if (resource != null) {
@@ -114,5 +119,11 @@ public class MessengerController {
             }
         }
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/api/getAllUsers")
+    private ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

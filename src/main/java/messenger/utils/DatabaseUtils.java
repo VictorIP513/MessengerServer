@@ -35,6 +35,13 @@ public class DatabaseUtils {
         }
     }
 
+    public <T> List<T> getAllRecordsFromTable(Class<T> tableClassType) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            return getAllRecordsFromTable(session, tableClassType);
+        }
+    }
+
     public void saveObject(Object object) {
         openSessionAndExecuteAction(session -> session.save(object));
     }
@@ -49,6 +56,13 @@ public class DatabaseUtils {
             databaseActionListener.onAction(session);
             session.getTransaction().commit();
         }
+    }
+
+    private <T> List<T> getAllRecordsFromTable(Session session, Class<T> tableClassType) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(tableClassType);
+        criteriaQuery.from(tableClassType);
+        return session.createQuery(criteriaQuery).getResultList();
     }
 
     private <T> List<T> getObjectsByField(Session session, Class<T> tableClassType, String columnName, Object field) {
