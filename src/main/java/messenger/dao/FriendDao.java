@@ -29,12 +29,12 @@ public class FriendDao {
         Friend friend = getFriendStatus(user, friendUser);
         if (friend == null) {
             Friend newFriend = new Friend();
-            newFriend.setFriendStatus((short) FriendStatus.USER_IS_FRIEND.getStatusInDatabase());
+            newFriend.setFriendStatus((short) FriendStatus.FRIEND_REQUEST_HAS_BEEN_SENT.getStatusInDatabase());
             newFriend.setUser(user);
             newFriend.setFriendUser(friendUser);
             databaseUtils.saveObject(newFriend);
         } else {
-            friend.setFriendStatus((short) FriendStatus.USER_IS_FRIEND.getStatusInDatabase());
+            friend.setFriendStatus((short) FriendStatus.FRIEND_REQUEST_HAS_BEEN_SENT.getStatusInDatabase());
             databaseUtils.updateObject(friend);
         }
     }
