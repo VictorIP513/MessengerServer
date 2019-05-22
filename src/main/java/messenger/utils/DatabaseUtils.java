@@ -4,12 +4,14 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class DatabaseUtils {
@@ -39,6 +41,18 @@ public class DatabaseUtils {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             return getAllRecordsFromTable(session, tableClassType);
+        }
+    }
+
+    public <T> T getUniqueObjectFromQuery(Class<T> resultType, String queryString, Map<String, Object> params) {
+        try (Session session = sessionFactory.openSession()) {
+            TypedQuery<T> query = session.createQuery(queryString, resultType);
+            for (Map.Entry<String, Object> param : params.entrySet()) {
+                query.setParameter(param.getKey(), param.getValue());
+            }
+            return query.getSingleResult();
+        } catch (NoResultException ignore) {
+            return null;
         }
     }
 

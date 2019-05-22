@@ -1,5 +1,6 @@
 package messenger.controller.api;
 
+import messenger.controller.response.FriendStatus;
 import messenger.controller.response.LoginResponse;
 import messenger.controller.response.RegistrationResponse;
 import messenger.model.User;
@@ -125,5 +126,35 @@ public class MessengerController {
     private ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/getFriendStatus/{login}")
+    private ResponseEntity<FriendStatus> getFriendStatus(
+            @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User friendUser = userService.getUserByLogin(login);
+        if (friendUser == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        FriendStatus friendStatus = userService.getFriendStatus(user, friendUser);
+        return new ResponseEntity<>(friendStatus, HttpStatus.OK);
+    }
+
+    @PatchMapping("/api/addToFriend/{login}")
+    private ResponseEntity<Void> addToFriend(
+            @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User friendUser = userService.getUserByLogin(login);
+        if (friendUser == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        userService.addToFriend(user, friendUser);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -1,10 +1,9 @@
 package messenger.service;
 
-import messenger.dao.EmailStatusDao;
-import messenger.dao.TokenDao;
-import messenger.dao.UserDao;
-import messenger.dao.UserDetailsDao;
+import messenger.controller.response.FriendStatus;
+import messenger.dao.*;
 import messenger.model.EmailStatus;
+import messenger.model.Friend;
 import messenger.model.User;
 import messenger.model.UserDetails;
 import messenger.view.LocalizationProperties;
@@ -32,6 +31,9 @@ public class UserService {
 
     @Autowired
     private TokenDao tokenDao;
+
+    @Autowired
+    private FriendDao friendDao;
 
     @Autowired
     private MailSender mailSender;
@@ -107,6 +109,18 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userDao.getAllUsers();
+    }
+
+    public FriendStatus getFriendStatus(User user, User friendUser) {
+        Friend friend = friendDao.getFriendStatus(user, friendUser);
+        if (friend == null) {
+            return FriendStatus.USER_IS_NOT_FRIEND;
+        }
+        return FriendStatus.getFriendStatusFromStatusInDatabase(friend.getFriendStatus());
+    }
+
+    public void addToFriend(User user, User friendUser) {
+        friendDao.addToFriend(user, friendUser);
     }
 
     private void sendEmailConfirmMessage(User user) {
