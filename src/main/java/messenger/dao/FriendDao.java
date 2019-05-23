@@ -7,8 +7,11 @@ import messenger.utils.DatabaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @Component
@@ -37,5 +40,15 @@ public class FriendDao {
             friend.setFriendStatus((short) FriendStatus.FRIEND_REQUEST_HAS_BEEN_SENT.getStatusInDatabase());
             databaseUtils.updateObject(friend);
         }
+    }
+
+    public List<User> getFriends(User user) {
+        int friendStatusInDatabase = FriendStatus.USER_IS_FRIEND.getStatusInDatabase();
+        String query = String.format("FROM Friend WHERE user =: user AND friendStatus = %d", friendStatusInDatabase);
+        Map<String, Object> params = Collections.singletonMap("user", user);
+        List<Friend> friends = databaseUtils.getObjectsFromQuery(Friend.class, query, params);
+        return friends.stream()
+                .map(Friend::getFriendUser)
+                .collect(Collectors.toList());
     }
 }

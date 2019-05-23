@@ -123,6 +123,10 @@ public class UserService {
         friendDao.addToFriend(user, friendUser);
     }
 
+    public List<User> getFriends(User user) {
+        return friendDao.getFriends(user);
+    }
+
     private void sendEmailConfirmMessage(User user) {
         String serverIp = ServerProperties.getProperty("server.ip");
         String serverPort = ServerProperties.getProperty("server.port");

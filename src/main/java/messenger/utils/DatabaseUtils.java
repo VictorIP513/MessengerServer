@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +54,16 @@ public class DatabaseUtils {
             return query.getSingleResult();
         } catch (NoResultException ignore) {
             return null;
+        }
+    }
+
+    public <T> List<T> getObjectsFromQuery(Class<T> resultType, String queryString, Map<String, Object> params) {
+        try (Session session = sessionFactory.openSession()) {
+            TypedQuery<T> query = session.createQuery(queryString, resultType);
+            for (Map.Entry<String, Object> param : params.entrySet()) {
+                query.setParameter(param.getKey(), param.getValue());
+            }
+            return query.getResultList();
         }
     }
 

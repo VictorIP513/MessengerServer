@@ -143,6 +143,17 @@ public class MessengerController {
         return new ResponseEntity<>(friendStatus, HttpStatus.OK);
     }
 
+    @GetMapping("/api/getFriends")
+    private ResponseEntity<List<User>> getFriends(
+            @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        List<User> friends = userService.getFriends(user);
+        return new ResponseEntity<>(friends, HttpStatus.OK);
+    }
+
     @PatchMapping("/api/addToFriend/{login}")
     private ResponseEntity<Void> addToFriend(
             @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
