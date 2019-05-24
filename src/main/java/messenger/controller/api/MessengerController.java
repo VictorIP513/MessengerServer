@@ -154,6 +154,28 @@ public class MessengerController {
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
+    @GetMapping("/api/getIncomingRequests")
+    private ResponseEntity<List<User>> getIncomingRequests(
+            @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        List<User> friends = userService.getIncomingRequests(user);
+        return new ResponseEntity<>(friends, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/getOutgoingRequests")
+    private ResponseEntity<List<User>> getOutgoingRequests(
+            @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        List<User> friends = userService.getOutgoingRequests(user);
+        return new ResponseEntity<>(friends, HttpStatus.OK);
+    }
+
     @PatchMapping("/api/addToFriend/{login}")
     private ResponseEntity<Void> addToFriend(
             @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
@@ -166,6 +188,36 @@ public class MessengerController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         userService.addToFriend(user, friendUser);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/api/deleteFromFriend/{login}")
+    private ResponseEntity<Void> deleteFromFriend(
+            @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User friendUser = userService.getUserByLogin(login);
+        if (friendUser == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        userService.deleteFromFriend(user, friendUser);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/api/acceptFriendRequest/{login}")
+    private ResponseEntity<Void> acceptFriendRequest(
+            @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User friendUser = userService.getUserByLogin(login);
+        if (friendUser == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        userService.acceptFriendRequest(user, friendUser);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

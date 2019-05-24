@@ -10,7 +10,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -73,6 +72,10 @@ public class DatabaseUtils {
 
     public void updateObject(Object object) {
         openSessionAndExecuteAction(session -> session.update(object));
+    }
+
+    public void deleteObject(Object object) {
+        openSessionAndExecuteAction(session -> session.delete(object));
     }
 
     private void openSessionAndExecuteAction(DatabaseActionListener databaseActionListener) {

@@ -123,8 +123,24 @@ public class UserService {
         friendDao.addToFriend(user, friendUser);
     }
 
+    public void deleteFromFriend(User user, User friendUser) {
+        friendDao.deleteFromFriend(user, friendUser);
+    }
+
+    public void acceptFriendRequest(User user, User friendUser) {
+        friendDao.acceptFriendRequest(user, friendUser);
+    }
+
     public List<User> getFriends(User user) {
         return friendDao.getFriends(user);
+    }
+
+    public List<User> getIncomingRequests(User user) {
+        return friendDao.getIncomingRequests(user);
+    }
+
+    public List<User> getOutgoingRequests(User user) {
+        return friendDao.getOutgoingRequests(user);
     }
 
     private void sendEmailConfirmMessage(User user) {

@@ -29,26 +29,64 @@ public class FriendDao {
     }
 
     public void addToFriend(User user, User friendUser) {
-        Friend friend = getFriendStatus(user, friendUser);
-        if (friend == null) {
-            Friend newFriend = new Friend();
-            newFriend.setFriendStatus((short) FriendStatus.FRIEND_REQUEST_HAS_BEEN_SENT.getStatusInDatabase());
-            newFriend.setUser(user);
-            newFriend.setFriendUser(friendUser);
-            databaseUtils.saveObject(newFriend);
-        } else {
-            friend.setFriendStatus((short) FriendStatus.FRIEND_REQUEST_HAS_BEEN_SENT.getStatusInDatabase());
-            databaseUtils.updateObject(friend);
-        }
+        setFriendStatus(user, friendUser, FriendStatus.FRIEND_REQUEST_HAS_BEEN_SENT);
+        setFriendStatus(friendUser, user, FriendStatus.INCOMING_FRIEND_REQUEST);
+    }
+
+    @SuppressWarnings("squid:S2234")
+    public void deleteFromFriend(User user, User friendUser) {
+        Friend firstFriendStatus = getFriendStatus(user, friendUser);
+        Friend secondFriendStatus = getFriendStatus(friendUser, user);
+
+        databaseUtils.deleteObject(firstFriendStatus);
+        databaseUtils.deleteObject(secondFriendStatus);
+    }
+
+    @SuppressWarnings("squid:S2234")
+    public void acceptFriendRequest(User user, User friendUser) {
+        Friend firstFriendStatus = getFriendStatus(user, friendUser);
+        Friend secondFriendStatus = getFriendStatus(friendUser, user);
+
+        firstFriendStatus.setFriendStatus((short) FriendStatus.USER_IS_FRIEND.getStatusInDatabase());
+        secondFriendStatus.setFriendStatus((short) FriendStatus.USER_IS_FRIEND.getStatusInDatabase());
+
+        databaseUtils.updateObject(firstFriendStatus);
+        databaseUtils.updateObject(secondFriendStatus);
     }
 
     public List<User> getFriends(User user) {
-        int friendStatusInDatabase = FriendStatus.USER_IS_FRIEND.getStatusInDatabase();
+        return getUsersFromFriendStatus(user, FriendStatus.USER_IS_FRIEND);
+    }
+
+    public List<User> getIncomingRequests(User user) {
+        return getUsersFromFriendStatus(user, FriendStatus.INCOMING_FRIEND_REQUEST);
+    }
+
+    public List<User> getOutgoingRequests(User user) {
+        return getUsersFromFriendStatus(user, FriendStatus.FRIEND_REQUEST_HAS_BEEN_SENT);
+    }
+
+    private List<User> getUsersFromFriendStatus(User user, FriendStatus friendStatus) {
+        int friendStatusInDatabase = friendStatus.getStatusInDatabase();
         String query = String.format("FROM Friend WHERE user =: user AND friendStatus = %d", friendStatusInDatabase);
         Map<String, Object> params = Collections.singletonMap("user", user);
         List<Friend> friends = databaseUtils.getObjectsFromQuery(Friend.class, query, params);
         return friends.stream()
                 .map(Friend::getFriendUser)
                 .collect(Collectors.toList());
+    }
+
+    private void setFriendStatus(User user, User friendUser, FriendStatus friendStatus) {
+        Friend friend = getFriendStatus(user, friendUser);
+        if (friend == null) {
+            Friend newFriend = new Friend();
+            newFriend.setFriendStatus((short) friendStatus.getStatusInDatabase());
+            newFriend.setUser(user);
+            newFriend.setFriendUser(friendUser);
+            databaseUtils.saveObject(newFriend);
+        } else {
+            friend.setFriendStatus((short) friendStatus.getStatusInDatabase());
+            databaseUtils.updateObject(friend);
+        }
     }
 }

@@ -6,7 +6,8 @@ public enum FriendStatus {
 
     USER_IS_NOT_FRIEND(0),
     USER_IS_FRIEND(1),
-    FRIEND_REQUEST_HAS_BEEN_SENT(2);
+    FRIEND_REQUEST_HAS_BEEN_SENT(2),
+    INCOMING_FRIEND_REQUEST(3);
 
     private int statusInDatabase;
 
