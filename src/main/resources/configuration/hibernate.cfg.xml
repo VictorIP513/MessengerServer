@@ -19,6 +19,8 @@
         <mapping class="messenger.model.Token"/>
         <mapping class="messenger.model.UserDetails"/>
         <mapping class="messenger.model.Friend"/>
+        <mapping class="messenger.model.Message"/>
+        <mapping class="messenger.model.Dialog"/>
 
     </session-factory>
 </hibernate-configuration>
