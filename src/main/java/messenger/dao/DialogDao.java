@@ -46,6 +46,7 @@ public class DialogDao {
     public void addMessageToDialog(Dialog dialog, Message message) {
         Set<Message> messages = dialog.getMessages();
         messages.add(message);
+        dialog.setLastMessage(message);
         databaseUtils.updateObject(dialog);
     }
 
