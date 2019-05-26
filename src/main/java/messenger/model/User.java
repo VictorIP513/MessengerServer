@@ -3,6 +3,7 @@ package messenger.model;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
@@ -71,5 +72,24 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id &&
+                Objects.equals(uuid, user.uuid) &&
+                Objects.equals(firstName, user.firstName) &&
+                Objects.equals(surname, user.surname) &&
+                Objects.equals(login, user.login) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, uuid, firstName, surname, login, password, email);
     }
 }

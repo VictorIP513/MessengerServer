@@ -23,10 +23,23 @@ public class Dialog {
             value = @JoinColumn(name = "last_message_id", referencedColumnName = "id"))
     private Message lastMessage;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "users_from_dialogs", joinColumns = @JoinColumn(name = "dialog_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "messages_from_dialogs", joinColumns = @JoinColumn(name = "dialog_id"),
+            inverseJoinColumns = @JoinColumn(name = "message_id"))
+    private Set<Message> messages;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getDialogPhoto() {
         return dialogPhoto;
@@ -59,4 +72,14 @@ public class Dialog {
     public void setUsers(Set<User> users) {
         this.users = users;
     }
+
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Set<Message> messages) {
+        this.messages = messages;
+    }
+
+
 }

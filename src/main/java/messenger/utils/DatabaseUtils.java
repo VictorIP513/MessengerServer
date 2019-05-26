@@ -66,6 +66,21 @@ public class DatabaseUtils {
         }
     }
 
+    public <T> T getObjectById(Class<T> objectType, int id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.get(objectType, id);
+        }
+    }
+
+    public <T> T saveObjectAndGetId(T object) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.save(object);
+            session.getTransaction().commit();
+            return object;
+        }
+    }
+
     public void saveObject(Object object) {
         openSessionAndExecuteAction(session -> session.save(object));
     }
