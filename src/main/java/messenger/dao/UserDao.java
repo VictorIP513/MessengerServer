@@ -50,4 +50,9 @@ public class UserDao {
     public List<User> getAllUsers() {
         return databaseUtils.getAllRecordsFromTable(User.class);
     }
+
+    public void changePassword(User user, String newPassword) {
+        user.setPassword(newPassword);
+        databaseUtils.updateObject(user);
+    }
 }

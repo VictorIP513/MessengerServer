@@ -2,10 +2,7 @@ package messenger.service;
 
 import messenger.controller.response.FriendStatus;
 import messenger.dao.*;
-import messenger.model.EmailStatus;
-import messenger.model.Friend;
-import messenger.model.User;
-import messenger.model.UserDetails;
+import messenger.model.*;
 import messenger.view.LocalizationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +31,9 @@ public class UserService {
 
     @Autowired
     private FriendDao friendDao;
+
+    @Autowired
+    private PasswordStatusDao passwordStatusDao;
 
     @Autowired
     private MailSender mailSender;
@@ -143,6 +143,32 @@ public class UserService {
         return friendDao.getOutgoingRequests(user);
     }
 
+    public void changePassword(User user, String newPassword) {
+        PasswordStatus passwordStatus = new PasswordStatus();
+        passwordStatus.setNewPassword(newPassword);
+        passwordStatus.setNewPasswordUuid(UUID.randomUUID());
+        passwordStatus.setUser(user);
+        passwordStatusDao.savePasswordStatusToDatabase(passwordStatus);
+        setPasswordChangeMessage(user, passwordStatus);
+    }
+
+    public PasswordStatus getPasswordStatus(String passwordCode) {
+        if (passwordCode.matches(UUID_REGEXP_VALIDATOR)) {
+            UUID passwordUUIDCode = UUID.fromString(passwordCode);
+            return passwordStatusDao.getPasswordStatusFromUUIDCode(passwordUUIDCode);
+        }
+        return null;
+    }
+
+    public void confirmChangePassword(PasswordStatus passwordStatus) {
+        userDao.changePassword(passwordStatus.getUser(), passwordStatus.getNewPassword());
+        passwordStatusDao.deleteChangePasswordStatus(passwordStatus);
+    }
+
+    public void cancelChangePassword(PasswordStatus passwordStatus) {
+        passwordStatusDao.deleteChangePasswordStatus(passwordStatus);
+    }
+
     private void sendEmailConfirmMessage(User user) {
         String serverIp = ServerProperties.getProperty("server.ip");
         String serverPort = ServerProperties.getProperty("server.port");
@@ -152,6 +178,22 @@ public class UserService {
         String message = String.format("%s, %s %s. %s %s",
                 LocalizationProperties.getProperty("email_confirm.greeting"), user.getFirstName(), user.getSurname(),
                 LocalizationProperties.getProperty("email_confirm.message"), confirmLink);
+        mailSender.send(user.getEmail(), subject, message);
+    }
+
+    private void setPasswordChangeMessage(User user, PasswordStatus passwordStatus) {
+        String serverIp = ServerProperties.getProperty("server.ip");
+        String serverPort = ServerProperties.getProperty("server.port");
+        String confirmNewPasswordLink = String.format("http://%s:%s/api/confirmChangePasswordStatus/%s",
+                serverIp, serverPort, passwordStatus.getNewPasswordUuid());
+        String cancelConfirmNewPasswordLink = String.format("http://%s:%s/api/cancelChangePasswordStatus/%s",
+                serverIp, serverPort, passwordStatus.getNewPasswordUuid());
+
+        String subject = LocalizationProperties.getProperty("change_password.subject");
+        String message = String.format("%s, %s %s. %s %s.%n %s %s",
+                LocalizationProperties.getProperty("change_password.greeting"), user.getFirstName(), user.getSurname(),
+                LocalizationProperties.getProperty("password_change_confirm.message"), confirmNewPasswordLink,
+                LocalizationProperties.getProperty("password_change_cancel.message"), cancelConfirmNewPasswordLink);
         mailSender.send(user.getEmail(), subject, message);
     }
 }

@@ -16,6 +16,7 @@
 
         <mapping class="messenger.model.User"/>
         <mapping class="messenger.model.EmailStatus"/>
+        <mapping class="messenger.model.PasswordStatus"/>
         <mapping class="messenger.model.Token"/>
         <mapping class="messenger.model.UserDetails"/>
         <mapping class="messenger.model.Friend"/>

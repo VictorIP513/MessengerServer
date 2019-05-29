@@ -3,6 +3,8 @@ package messenger.controller.api;
 import messenger.controller.response.FriendStatus;
 import messenger.controller.response.LoginResponse;
 import messenger.controller.response.RegistrationResponse;
+import messenger.controller.response.RestorePasswordResponse;
+import messenger.model.PasswordStatus;
 import messenger.model.User;
 import messenger.model.UserDetails;
 import messenger.service.AuthenticationTokenGenerator;
@@ -85,6 +87,28 @@ public class MessengerController {
         }
         return new ResponseEntity<>(
                 LocalizationProperties.getProperty("activation.code_is_invalid"), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/confirmChangePasswordStatus/{passwordCode}")
+    private ResponseEntity<String> confirmChangePasswordStatus(@PathVariable String passwordCode) {
+        PasswordStatus passwordStatus = userService.getPasswordStatus(passwordCode);
+        if (passwordStatus == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        userService.confirmChangePassword(passwordStatus);
+        return new ResponseEntity<>(
+                LocalizationProperties.getProperty("change_password.change_successful"), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/cancelChangePasswordStatus/{passwordCode}")
+    private ResponseEntity<String> cancelChangePasswordStatus(@PathVariable String passwordCode) {
+        PasswordStatus passwordStatus = userService.getPasswordStatus(passwordCode);
+        if (passwordStatus == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        userService.cancelChangePassword(passwordStatus);
+        return new ResponseEntity<>(
+                LocalizationProperties.getProperty("change_password.cancel"), HttpStatus.OK);
     }
 
     @GetMapping("/api/checkAuthenticationToken/{authenticationToken}")
@@ -219,5 +243,16 @@ public class MessengerController {
         }
         userService.acceptFriendRequest(user, friendUser);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/api/restorePassword")
+    private ResponseEntity<RestorePasswordResponse> restorePassword(
+            @RequestParam(name = "login") String login, @RequestParam(name = "newPassword") String newPassword) {
+        User user = userService.getUserByLogin(login);
+        if (user == null) {
+            return new ResponseEntity<>(RestorePasswordResponse.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+        userService.changePassword(user, newPassword);
+        return new ResponseEntity<>(RestorePasswordResponse.CONFIRMATION_EMAIL_SENT, HttpStatus.OK);
     }
 }
