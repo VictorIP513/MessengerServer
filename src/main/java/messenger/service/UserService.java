@@ -144,6 +144,7 @@ public class UserService {
     }
 
     public void changePassword(User user, String newPassword) {
+        passwordStatusDao.deleteOldPasswordStatus(user);
         PasswordStatus passwordStatus = new PasswordStatus();
         passwordStatus.setNewPassword(newPassword);
         passwordStatus.setNewPasswordUuid(UUID.randomUUID());

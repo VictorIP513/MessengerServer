@@ -1,6 +1,7 @@
 package messenger.dao;
 
 import messenger.model.PasswordStatus;
+import messenger.model.User;
 import messenger.utils.DatabaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,5 +26,13 @@ public class PasswordStatusDao {
 
     public void deleteChangePasswordStatus(PasswordStatus passwordStatus) {
         databaseUtils.deleteObject(passwordStatus);
+    }
+
+    public void deleteOldPasswordStatus(User user) {
+        PasswordStatus oldPasswordStatus = databaseUtils.getUniqueObjectByField(
+                PasswordStatus.class, "user", user);
+        if (oldPasswordStatus != null) {
+            databaseUtils.deleteObject(oldPasswordStatus);
+        }
     }
 }
