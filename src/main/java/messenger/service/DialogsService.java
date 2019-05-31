@@ -21,6 +21,9 @@ public class DialogsService {
     @Autowired
     private MessageDao messageDao;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public Dialog createDialog(User user, User userToSend, String lastMessageText) {
         Message lastMessage = new Message();
         lastMessage.setDate(new Timestamp(new Date().getTime()));
@@ -56,6 +59,10 @@ public class DialogsService {
         message.setDate(new Timestamp(new Date().getTime()));
 
         dialogDao.addMessageToDialog(dialog, message);
+
+        Set<User> usersToSendNotification = new HashSet<>(dialog.getUsers());
+        usersToSendNotification.remove(user);
+        notificationService.notifyANewMessage(usersToSendNotification, message);
         return message;
     }
 

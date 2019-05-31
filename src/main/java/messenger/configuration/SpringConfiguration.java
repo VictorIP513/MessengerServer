@@ -1,5 +1,6 @@
 package messenger.configuration;
 
+import com.google.gson.Gson;
 import messenger.utils.DatabaseUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
@@ -21,5 +22,10 @@ public class SpringConfiguration {
         return new org.hibernate.cfg.Configuration()
                 .configure(HIBERNATE_CONFIGURATION_FILE)
                 .buildSessionFactory();
+    }
+
+    @Bean
+    public Gson gson() {
+        return new Gson();
     }
 }
