@@ -3,7 +3,6 @@ package messenger.service;
 import com.google.gson.Gson;
 import messenger.model.Message;
 import messenger.model.User;
-import messenger.model.notification.Notification;
 import messenger.model.notification.NotificationMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -23,8 +22,7 @@ class NotificationService {
 
     private static final String DEFAULT_PRIORITY = "high";
     private static final String TOPICS_ADDRESS = "/topics/";
-    private static final String NOTIFICATION_MESSAGE_TITLE = "New message";
-    private static final String NOTIFICATION_MESSAGE_BODY = "Message";
+
     @Autowired
     private Gson gson;
 
@@ -32,12 +30,8 @@ class NotificationService {
         for (User user : usersToSendNotification) {
             Map<String, Object> data = new HashMap<>();
             data.put("message", message);
-            Notification notification = new Notification();
-            notification.setBody(NOTIFICATION_MESSAGE_BODY);
-            notification.setTitle(NOTIFICATION_MESSAGE_TITLE);
             NotificationMessage notificationMessage = new NotificationMessage();
             notificationMessage.setData(data);
-            notificationMessage.setNotification(notification);
             notificationMessage.setPriority(DEFAULT_PRIORITY);
             notificationMessage.setTo(TOPICS_ADDRESS + user.getLogin());
 
@@ -63,6 +57,5 @@ class NotificationService {
 
         CompletableFuture<String> pushNotification = CompletableFuture.completedFuture(firebaseResponse);
         CompletableFuture.allOf(pushNotification).join();
-
     }
 }
