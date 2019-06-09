@@ -10,7 +10,7 @@ import messenger.model.UserDetails;
 import messenger.service.AuthenticationTokenGenerator;
 import messenger.service.FileStorageService;
 import messenger.service.UserService;
-import messenger.view.LocalizationProperties;
+import messenger.properties.LocalizationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package messenger.model.notification;
+package messenger.model;
 
 import java.util.Map;
 

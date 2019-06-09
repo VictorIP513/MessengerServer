@@ -1,6 +1,7 @@
 package messenger.configuration;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import messenger.utils.DatabaseUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class SpringConfiguration {
 
     private static final String HIBERNATE_CONFIGURATION_FILE = "configuration/hibernate.cfg.xml";
+    private static final String JSON_DATE_FORMAT = "dd MMM yyyy HH:mm:ss";
 
     @Bean
     public DatabaseUtils databaseUtils() {
@@ -26,6 +28,8 @@ public class SpringConfiguration {
 
     @Bean
     public Gson gson() {
-        return new Gson();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setDateFormat(JSON_DATE_FORMAT);
+        return gsonBuilder.create();
     }
 }

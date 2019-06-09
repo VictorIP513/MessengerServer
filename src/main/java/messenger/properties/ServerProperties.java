@@ -1,4 +1,4 @@
-package messenger.service;
+package messenger.properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +10,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-class ServerProperties {
+public class ServerProperties {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(messenger.view.LocalizationProperties.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalizationProperties.class);
     private static final String SERVER_PROPERTIES_FILE = "/server.properties";
     private static final Charset SERVER_PROPERTIES_CHARSET = StandardCharsets.UTF_8;
 
@@ -22,7 +22,7 @@ class ServerProperties {
 
     }
 
-    static synchronized String getProperty(String key) {
+    public static synchronized String getProperty(String key) {
         if (properties == null) {
             initProperties();
         }

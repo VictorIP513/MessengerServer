@@ -5,11 +5,14 @@ import messenger.dao.MessageDao;
 import messenger.model.Dialog;
 import messenger.model.Message;
 import messenger.model.User;
+import messenger.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Service
@@ -26,7 +29,7 @@ public class DialogsService {
 
     public Dialog createDialog(User user, User userToSend, String lastMessageText) {
         Message lastMessage = new Message();
-        lastMessage.setDate(new Timestamp(new Date().getTime()));
+        lastMessage.setDate(DateUtils.getCurrentTime());
         lastMessage.setText(lastMessageText);
         lastMessage.setUser(user);
         messageDao.saveMessage(lastMessage);
@@ -56,7 +59,7 @@ public class DialogsService {
         Message message = new Message();
         message.setUser(user);
         message.setText(messageText);
-        message.setDate(new Timestamp(new Date().getTime()));
+        message.setDate(DateUtils.getCurrentTime());
 
         dialogDao.addMessageToDialog(dialog, message);
 
