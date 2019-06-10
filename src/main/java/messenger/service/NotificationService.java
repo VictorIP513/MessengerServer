@@ -2,8 +2,8 @@ package messenger.service;
 
 import com.google.gson.Gson;
 import messenger.model.Message;
-import messenger.model.User;
 import messenger.model.NotificationMessage;
+import messenger.model.User;
 import messenger.properties.ServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -24,21 +24,35 @@ class NotificationService {
     private static final String DEFAULT_PRIORITY = "high";
     private static final String TOPICS_ADDRESS = "/topics/";
 
+    private static final String MESSAGE_DATA_TYPE = "message";
+    private static final String NEW_FRIEND_TYPE = "new_friend";
+    private static final String ACCEPT_FRIEND_REQUEST_TYPE = "accept_friend_request";
+
     @Autowired
     private Gson gson;
 
     void notifyANewMessage(Set<User> usersToSendNotification, Message message) {
         for (User user : usersToSendNotification) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("message", message);
-            NotificationMessage notificationMessage = new NotificationMessage();
-            notificationMessage.setData(data);
-            notificationMessage.setPriority(DEFAULT_PRIORITY);
-            notificationMessage.setTo(TOPICS_ADDRESS + user.getLogin());
-
-            String json = gson.toJson(notificationMessage);
-            sendNotificationJson(json);
+            sendNotificationMessage(MESSAGE_DATA_TYPE, message, user.getLogin());
         }
+    }
+
+    void notifyANewFriend(User user, User friendUser) {
+        sendNotificationMessage(NEW_FRIEND_TYPE, user, friendUser.getLogin());
+    }
+
+    void notifyAAcceptFriendRequest(User user, User friendUser) {
+        sendNotificationMessage(ACCEPT_FRIEND_REQUEST_TYPE, user, friendUser.getLogin());
+    }
+
+    private void sendNotificationMessage(String dataKey, Object dataValue, String sendTo) {
+        Map<String, Object> data = Collections.singletonMap(dataKey, dataValue);
+        NotificationMessage notificationMessage = new NotificationMessage();
+        notificationMessage.setData(data);
+        notificationMessage.setPriority(DEFAULT_PRIORITY);
+        notificationMessage.setTo(TOPICS_ADDRESS + sendTo);
+        String json = gson.toJson(notificationMessage);
+        sendNotificationJson(json);
     }
 
     @Async

@@ -42,6 +42,9 @@ public class UserService {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public boolean isExistLogin(String login) {
         return userDao.isExistLogin(login);
     }
@@ -122,6 +125,7 @@ public class UserService {
 
     public void addToFriend(User user, User friendUser) {
         friendDao.addToFriend(user, friendUser);
+        notificationService.notifyANewFriend(user, friendUser);
     }
 
     public void deleteFromFriend(User user, User friendUser) {
@@ -130,6 +134,7 @@ public class UserService {
 
     public void acceptFriendRequest(User user, User friendUser) {
         friendDao.acceptFriendRequest(user, friendUser);
+        notificationService.notifyAAcceptFriendRequest(user, friendUser);
     }
 
     public List<User> getFriends(User user) {
