@@ -5,6 +5,7 @@ import messenger.dao.*;
 import messenger.model.*;
 import messenger.properties.ServerProperties;
 import messenger.properties.LocalizationProperties;
+import messenger.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -199,6 +200,10 @@ public class UserService {
 
     public void notifyALoggedInOnNewDevice(User user) {
         notificationService.notifyALoggedInOnNewDevice(user);
+    }
+
+    public void setUserIsOnline(User user) {
+        userDetailsDao.setLastOnlineDate(user, DateUtils.getCurrentTime());
     }
 
     String getAuthenticationTokenFromUser(User user) {

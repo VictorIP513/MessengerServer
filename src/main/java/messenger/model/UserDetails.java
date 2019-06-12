@@ -1,6 +1,7 @@
 package messenger.model;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -14,6 +15,9 @@ public class UserDetails {
 
     @Column(name = "user_photo")
     private String userPhoto;
+
+    @Column(name = "last_online")
+    private Timestamp lastOnline;
 
     @OneToOne
     @JoinColumns(foreignKey = @ForeignKey(name = "user_id"), value = @JoinColumn(referencedColumnName = "id"))
@@ -30,6 +34,14 @@ public class UserDetails {
 
     public void setUserPhoto(String userPhoto) {
         this.userPhoto = userPhoto;
+    }
+
+    public Timestamp getLastOnline() {
+        return lastOnline;
+    }
+
+    public void setLastOnline(Timestamp lastOnline) {
+        this.lastOnline = lastOnline;
     }
 
     public User getUser() {

@@ -327,4 +327,14 @@ public class MessengerController {
         userService.changePassword(user, newPassword);
         return new ResponseEntity<>(RestorePasswordResponse.CONFIRMATION_EMAIL_SENT, HttpStatus.OK);
     }
+
+    @PatchMapping("/api/userIsOnline")
+    private ResponseEntity<Void> userIsOnline(@RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        userService.setUserIsOnline(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

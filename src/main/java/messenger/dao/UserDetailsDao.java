@@ -6,6 +6,7 @@ import messenger.utils.DatabaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,7 @@ public class UserDetailsDao {
     public String uploadUserPhotoAndGetOldPhoto(String pathToPhoto, User user) {
         UserDetails userDetails = getUserDetailsByUser(user);
         if (userDetails == null) {
-            userDetails = createUserDetails(user, pathToPhoto, Collections.emptySet());
+            userDetails = createUserDetails(user, pathToPhoto, Collections.emptySet(), null);
             databaseUtils.saveObject(userDetails);
             return null;
         } else {
@@ -34,6 +35,17 @@ public class UserDetailsDao {
         }
     }
 
+    public void setLastOnlineDate(User user, Timestamp lastOnlineDate) {
+        UserDetails userDetails = getUserDetailsByUser(user);
+        if (userDetails == null) {
+            userDetails = createUserDetails(user, null, Collections.emptySet(), lastOnlineDate);
+            databaseUtils.saveObject(userDetails);
+        } else {
+            userDetails.setLastOnline(lastOnlineDate);
+            databaseUtils.updateObject(userDetails);
+        }
+    }
+
     public UserDetails getUserDetailsByUser(User user) {
         return databaseUtils.getUniqueObjectByField(UserDetails.class, USER_COLUMN_NAME, user);
     }
@@ -41,7 +53,7 @@ public class UserDetailsDao {
     public void blockUser(User user, User userToBlock) {
         UserDetails userDetails = getUserDetailsByUser(user);
         if (userDetails == null) {
-            userDetails = createUserDetails(user, null, Collections.singleton(userToBlock));
+            userDetails = createUserDetails(user, null, Collections.singleton(userToBlock), null);
             databaseUtils.saveObject(userDetails);
         } else {
             Set<User> blockedUsers = userDetails.getBlockedUsers();
@@ -74,11 +86,12 @@ public class UserDetailsDao {
         return new ArrayList<>(userDetails.getBlockedUsers());
     }
 
-    private UserDetails createUserDetails(User user, String pathToPhoto, Set<User> blockedUsers) {
+    private UserDetails createUserDetails(User user, String pathToPhoto, Set<User> blockedUsers, Timestamp lastOnline) {
         UserDetails userDetails = new UserDetails();
         userDetails.setUser(user);
         userDetails.setUserPhoto(pathToPhoto);
         userDetails.setBlockedUsers(blockedUsers);
+        userDetails.setLastOnline(lastOnline);
         return userDetails;
     }
 }
