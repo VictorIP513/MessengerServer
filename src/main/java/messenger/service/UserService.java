@@ -176,6 +176,27 @@ public class UserService {
         passwordStatusDao.deleteChangePasswordStatus(passwordStatus);
     }
 
+    public void blockUser(User user, User userToBlock) {
+        friendDao.deleteFromFriend(user, userToBlock);
+        userDetailsDao.blockUser(user, userToBlock);
+    }
+
+    public void unlockUser(User user, User userToUnlock) {
+        userDetailsDao.unlockUser(user, userToUnlock);
+    }
+
+    public boolean isBlockedUser(User user, User secondUser) {
+        return userDetailsDao.isBlockedUser(user, secondUser);
+    }
+
+    public boolean getBlockYouStatus(User user, User secondUser) {
+        return userDetailsDao.isBlockedUser(secondUser, user);
+    }
+
+    public List<User> getBlockedUsersFromUser(User user) {
+        return userDetailsDao.getBlockedUsersFromUser(user);
+    }
+
     private void sendEmailConfirmMessage(User user) {
         String serverIp = ServerProperties.getProperty("server.ip");
         String serverPort = ServerProperties.getProperty("server.port");

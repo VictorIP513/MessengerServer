@@ -1,6 +1,7 @@
 package messenger.model;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
@@ -18,6 +19,11 @@ public class UserDetails {
     @JoinColumns(foreignKey = @ForeignKey(name = "user_id"), value = @JoinColumn(referencedColumnName = "id"))
     private User user;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "blocked_users", joinColumns = @JoinColumn(name = "user_details_id"),
+            inverseJoinColumns = @JoinColumn(name = "blocked_user_id"))
+    private Set<User> blockedUsers;
+
     public String getUserPhoto() {
         return userPhoto;
     }
@@ -32,5 +38,13 @@ public class UserDetails {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Set<User> getBlockedUsers() {
+        return blockedUsers;
+    }
+
+    public void setBlockedUsers(Set<User> blockedUsers) {
+        this.blockedUsers = blockedUsers;
     }
 }

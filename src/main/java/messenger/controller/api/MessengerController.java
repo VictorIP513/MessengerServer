@@ -7,10 +7,10 @@ import messenger.controller.response.RestorePasswordResponse;
 import messenger.model.PasswordStatus;
 import messenger.model.User;
 import messenger.model.UserDetails;
+import messenger.properties.LocalizationProperties;
 import messenger.service.AuthenticationTokenGenerator;
 import messenger.service.FileStorageService;
 import messenger.service.UserService;
-import messenger.properties.LocalizationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -132,7 +132,7 @@ public class MessengerController {
         User user = userService.getUserByLogin(login);
         if (user != null) {
             UserDetails userDetails = userService.getUserDetailsByUser(user);
-            if (userDetails == null) {
+            if (userDetails == null || userDetails.getUserPhoto() == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             String path = fileStorageService.getFullPathToFile(userDetails.getUserPhoto());
@@ -200,6 +200,47 @@ public class MessengerController {
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
+    @GetMapping("/api/getBlockStatus/{login}")
+    private ResponseEntity<Boolean> getBlockStatus(
+            @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User secondUser = userService.getUserByLogin(login);
+        if (secondUser == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        boolean isBlockedUser = userService.isBlockedUser(user, secondUser);
+        return new ResponseEntity<>(isBlockedUser, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/getBlockYouStatus/{login}")
+    private ResponseEntity<Boolean> getBlockYouStatus(
+            @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User secondUser = userService.getUserByLogin(login);
+        if (secondUser == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        boolean blockYouStatus = userService.getBlockYouStatus(user, secondUser);
+        return new ResponseEntity<>(blockYouStatus, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/getAllBlockedUsers")
+    private ResponseEntity<List<User>> getBlockYouStatus(
+            @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        List<User> blockedUsersList = userService.getBlockedUsersFromUser(user);
+        return new ResponseEntity<>(blockedUsersList, HttpStatus.OK);
+    }
+
     @PatchMapping("/api/addToFriend/{login}")
     private ResponseEntity<Void> addToFriend(
             @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
@@ -242,6 +283,36 @@ public class MessengerController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         userService.acceptFriendRequest(user, friendUser);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/api/blockUser/{login}")
+    private ResponseEntity<Void> blockUser(
+            @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User userToBlock = userService.getUserByLogin(login);
+        if (userToBlock == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        userService.blockUser(user, userToBlock);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/api/unlockUser/{login}")
+    private ResponseEntity<Void> unlockUser(
+            @PathVariable String login, @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        User userToUnlock = userService.getUserByLogin(login);
+        if (userToUnlock == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        userService.unlockUser(user, userToUnlock);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

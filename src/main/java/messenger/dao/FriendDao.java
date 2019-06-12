@@ -38,8 +38,10 @@ public class FriendDao {
         Friend firstFriendStatus = getFriendStatus(user, friendUser);
         Friend secondFriendStatus = getFriendStatus(friendUser, user);
 
-        databaseUtils.deleteObject(firstFriendStatus);
-        databaseUtils.deleteObject(secondFriendStatus);
+        if (firstFriendStatus != null && secondFriendStatus != null) {
+            databaseUtils.deleteObject(firstFriendStatus);
+            databaseUtils.deleteObject(secondFriendStatus);
+        }
     }
 
     @SuppressWarnings("squid:S2234")
