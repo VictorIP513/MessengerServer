@@ -27,6 +27,7 @@ class NotificationService {
     private static final String MESSAGE_DATA_TYPE = "message";
     private static final String NEW_FRIEND_TYPE = "new_friend";
     private static final String ACCEPT_FRIEND_REQUEST_TYPE = "accept_friend_request";
+    private static final String LOGGED_IN_ON_NEW_DEVICE_TYPE = "logged_in_on_new_device";
 
     @Autowired
     private Gson gson;
@@ -49,6 +50,11 @@ class NotificationService {
     void notifyAAcceptFriendRequest(User user, User friendUser) {
         String authenticationToken = userService.getAuthenticationTokenFromUser(friendUser);
         sendNotificationMessage(ACCEPT_FRIEND_REQUEST_TYPE, user, authenticationToken);
+    }
+
+    void notifyALoggedInOnNewDevice(User user) {
+        String authenticationToken = userService.getAuthenticationTokenFromUser(user);
+        sendNotificationMessage(LOGGED_IN_ON_NEW_DEVICE_TYPE, "", authenticationToken);
     }
 
     private void sendNotificationMessage(String dataKey, Object dataValue, String sendTo) {

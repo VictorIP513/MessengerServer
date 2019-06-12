@@ -197,6 +197,10 @@ public class UserService {
         return userDetailsDao.getBlockedUsersFromUser(user);
     }
 
+    public void notifyALoggedInOnNewDevice(User user) {
+        notificationService.notifyALoggedInOnNewDevice(user);
+    }
+
     String getAuthenticationTokenFromUser(User user) {
         return tokenDao.getAuthenticationTokenFromUser(user);
     }

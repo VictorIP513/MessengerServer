@@ -51,6 +51,7 @@ public class MessengerController {
         User user = userService.getUserByLoginAndPassword(login, password);
         if (user != null) {
             if (userService.isActivateUser(user)) {
+                userService.notifyALoggedInOnNewDevice(user);
                 String authenticationToken = AuthenticationTokenGenerator.getToken();
                 userService.setNewAuthenticationTokenToUser(authenticationToken, user);
                 LoginResponse response = new LoginResponse(LoginResponse.Status.LOGIN_SUCCESSFUL, authenticationToken);
