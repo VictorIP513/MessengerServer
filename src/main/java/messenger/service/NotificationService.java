@@ -31,18 +31,24 @@ class NotificationService {
     @Autowired
     private Gson gson;
 
+    @Autowired
+    private UserService userService;
+
     void notifyANewMessage(Set<User> usersToSendNotification, Message message) {
         for (User user : usersToSendNotification) {
-            sendNotificationMessage(MESSAGE_DATA_TYPE, message, user.getLogin());
+            String authenticationToken = userService.getAuthenticationTokenFromUser(user);
+            sendNotificationMessage(MESSAGE_DATA_TYPE, message, authenticationToken);
         }
     }
 
     void notifyANewFriend(User user, User friendUser) {
-        sendNotificationMessage(NEW_FRIEND_TYPE, user, friendUser.getLogin());
+        String authenticationToken = userService.getAuthenticationTokenFromUser(friendUser);
+        sendNotificationMessage(NEW_FRIEND_TYPE, user, authenticationToken);
     }
 
     void notifyAAcceptFriendRequest(User user, User friendUser) {
-        sendNotificationMessage(ACCEPT_FRIEND_REQUEST_TYPE, user, friendUser.getLogin());
+        String authenticationToken = userService.getAuthenticationTokenFromUser(friendUser);
+        sendNotificationMessage(ACCEPT_FRIEND_REQUEST_TYPE, user, authenticationToken);
     }
 
     private void sendNotificationMessage(String dataKey, Object dataValue, String sendTo) {

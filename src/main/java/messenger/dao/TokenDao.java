@@ -40,4 +40,9 @@ public class TokenDao {
                 Token.class, AUTHENTICATION_TOKEN_COLUMN_NAME, authenticationToken);
         return token.getUser();
     }
+
+    public String getAuthenticationTokenFromUser(User user) {
+        Token token = databaseUtils.getUniqueObjectByField(Token.class, USER_COLUMN_NAME, user);
+        return token == null ? null : token.getAuthenticationToken();
+    }
 }

@@ -197,6 +197,10 @@ public class UserService {
         return userDetailsDao.getBlockedUsersFromUser(user);
     }
 
+    String getAuthenticationTokenFromUser(User user) {
+        return tokenDao.getAuthenticationTokenFromUser(user);
+    }
+
     private void sendEmailConfirmMessage(User user) {
         String serverIp = ServerProperties.getProperty("server.ip");
         String serverPort = ServerProperties.getProperty("server.port");
