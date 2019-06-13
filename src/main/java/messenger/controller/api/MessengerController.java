@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -240,6 +241,16 @@ public class MessengerController {
         }
         List<User> blockedUsersList = userService.getBlockedUsersFromUser(user);
         return new ResponseEntity<>(blockedUsersList, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/getLastOnlineDate/{login}")
+    private ResponseEntity<Date> getLastOnlineDate(@PathVariable String login) {
+        User user = userService.getUserByLogin(login);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Date lastOnline = userService.getLastOnlineDate(user);
+        return new ResponseEntity<>(lastOnline, HttpStatus.OK);
     }
 
     @PatchMapping("/api/addToFriend/{login}")

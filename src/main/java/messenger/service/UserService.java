@@ -9,6 +9,7 @@ import messenger.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -204,6 +205,10 @@ public class UserService {
 
     public void setUserIsOnline(User user) {
         userDetailsDao.setLastOnlineDate(user, DateUtils.getCurrentTime());
+    }
+
+    public Date getLastOnlineDate(User user) {
+        return userDetailsDao.getLastOnlineDate(user);
     }
 
     String getAuthenticationTokenFromUser(User user) {

@@ -86,6 +86,14 @@ public class UserDetailsDao {
         return new ArrayList<>(userDetails.getBlockedUsers());
     }
 
+    public Timestamp getLastOnlineDate(User user) {
+        UserDetails userDetails = getUserDetailsByUser(user);
+        if (userDetails == null) {
+            return null;
+        }
+        return userDetails.getLastOnline();
+    }
+
     private UserDetails createUserDetails(User user, String pathToPhoto, Set<User> blockedUsers, Timestamp lastOnline) {
         UserDetails userDetails = new UserDetails();
         userDetails.setUser(user);
