@@ -16,8 +16,10 @@ public class Message {
     @JoinColumns(foreignKey = @ForeignKey(name = "user_id"), value = @JoinColumn(referencedColumnName = "id"))
     private User user;
 
-    private String text;
+    @Column(name = "is_photo")
+    private boolean isPhoto;
 
+    private String text;
     private Timestamp date;
 
     public User getUser() {
@@ -42,5 +44,13 @@ public class Message {
 
     public void setDate(Timestamp date) {
         this.date = date;
+    }
+
+    public boolean isPhoto() {
+        return isPhoto;
+    }
+
+    public void setMessageIsPhoto(boolean value) {
+        isPhoto = value;
     }
 }

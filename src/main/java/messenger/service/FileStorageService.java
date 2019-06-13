@@ -23,6 +23,8 @@ public class FileStorageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageService.class);
     private static final String UPLOAD_DIR =
             System.getProperty("user.dir") + File.separator + "uploads" + File.separator;
+    private static final String DIALOGS_UPLOAD_DIR = UPLOAD_DIR + "dialogs" + File.separator;
+
 
     public String storeFile(MultipartFile file, User user) {
         String userUUID = user.getUuid().toString();
@@ -42,8 +44,29 @@ public class FileStorageService {
         return null;
     }
 
+    public String storeFileFromDialog(int dialogId, MultipartFile file) {
+        String fileExtension = Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[1];
+        String newFileName = dialogId + UUID.randomUUID().toString() + "." + fileExtension;
+        Path newFilePath = Paths.get(DIALOGS_UPLOAD_DIR + newFileName);
+        try {
+            boolean directoryCreated = new File(DIALOGS_UPLOAD_DIR).mkdirs();
+            if (directoryCreated) {
+                LOGGER.info("Created dialog upload directory");
+            }
+            Files.copy(file.getInputStream(), newFilePath);
+            return newFileName;
+        } catch (IOException e) {
+            LOGGER.error("Could not store file {}", file.getOriginalFilename(), e);
+        }
+        return null;
+    }
+
     public String getFullPathToFile(String pathToFile) {
         return UPLOAD_DIR + pathToFile;
+    }
+
+    public String getFullPathToFileInDialog(String pathToFile) {
+        return DIALOGS_UPLOAD_DIR + pathToFile;
     }
 
     public Resource getResourceFromFile(String path) {

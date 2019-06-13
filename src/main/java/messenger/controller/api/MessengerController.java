@@ -148,6 +148,18 @@ public class MessengerController {
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 
+    @GetMapping("/api/getImage/{imageId}")
+    private ResponseEntity<Resource> getImage(@PathVariable String imageId) {
+        String path = fileStorageService.getFullPathToFileInDialog(imageId);
+        Resource resource = fileStorageService.getResourceFromFile(path);
+        if (resource != null) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
+                    .body(resource);
+        }
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
     @GetMapping("/api/getAllUsers")
     private ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();

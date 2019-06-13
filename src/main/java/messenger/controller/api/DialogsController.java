@@ -4,15 +4,14 @@ import messenger.model.Dialog;
 import messenger.model.Message;
 import messenger.model.User;
 import messenger.service.DialogsService;
+import messenger.service.FileStorageService;
 import messenger.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,6 +24,9 @@ public class DialogsController {
 
     @Autowired
     private DialogsService dialogsService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @PostMapping("/api/createDialog")
     private ResponseEntity<Dialog> createDialog(@RequestParam(name = "login") String login,
@@ -55,6 +57,23 @@ public class DialogsController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Message responseMessage = dialogsService.sendMessage(message, dialog, user);
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
+
+    @PostMapping("/api/sendImage/{dialogId}")
+    private ResponseEntity<Message> sendImage(@PathVariable int dialogId,
+                                              @ModelAttribute(name = "image") MultipartFile image,
+                                              @RequestParam(name = "authenticationToken") String authenticationToken) {
+        User user = userService.getUserByAuthenticationToken(authenticationToken);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        Dialog dialog = dialogsService.getDialog(dialogId);
+        if (dialog == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        String pathToFile = fileStorageService.storeFileFromDialog(dialogId, image);
+        Message responseMessage = dialogsService.sendImage(pathToFile, dialog, user);
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
