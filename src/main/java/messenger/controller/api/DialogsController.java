@@ -56,6 +56,11 @@ public class DialogsController {
         if (dialog == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        User secondUser = dialog.getUsers().iterator().next();
+        boolean isBlocked = userService.isBlockedUser(secondUser, user);
+        if (isBlocked) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Message responseMessage = dialogsService.sendMessage(message, dialog, user);
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
@@ -70,6 +75,11 @@ public class DialogsController {
         }
         Dialog dialog = dialogsService.getDialog(dialogId);
         if (dialog == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        User secondUser = dialog.getUsers().iterator().next();
+        boolean isBlocked = userService.isBlockedUser(secondUser, user);
+        if (isBlocked) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         String pathToFile = fileStorageService.storeFileFromDialog(dialogId, image);
